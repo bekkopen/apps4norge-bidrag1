@@ -14,13 +14,16 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class GetWeatherCameraAsyncTask extends AsyncTask<Void, WeatherCamera, Void> {
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-	private final AsyncTaskDelegate<WeatherCamera> delegate;
+public class GetWeatherCameraAsyncTask extends AsyncTask<Void, MarkerOptions, Void> {
+
+	private final AsyncTaskDelegate<MarkerOptions> delegate;
 
 	private final String API_URL = "http://webkamera.vegvesen.no/metadata";
 
-	public GetWeatherCameraAsyncTask(final AsyncTaskDelegate<WeatherCamera> delegate) {
+	public GetWeatherCameraAsyncTask(final AsyncTaskDelegate<MarkerOptions> delegate) {
 		this.delegate = delegate;
 	}
 
@@ -66,8 +69,9 @@ public class GetWeatherCameraAsyncTask extends AsyncTask<Void, WeatherCamera, Vo
 				} else if (tagName.equals("breddegrad")) {
 					eventType = parser.next();
 					camera.setLatitude(Double.parseDouble(parser.getText()));
+					MarkerOptions markerOptions = createMarkerOptions(camera);
+					publishProgress(markerOptions);
 
-					publishProgress(camera);
 				}
 				// Log.w(this.getClass().getCanonicalName(), "TAGNAME=" +
 				// tagName + ", value=" + parser.getText());
@@ -78,6 +82,12 @@ public class GetWeatherCameraAsyncTask extends AsyncTask<Void, WeatherCamera, Vo
 		Log.w(this.getClass().getCanonicalName(), "DONE");
 	}
 
+	private MarkerOptions createMarkerOptions(final WeatherCamera camera) {
+		MarkerOptions weatherCameraMarker = new MarkerOptions();
+		weatherCameraMarker.position(new LatLng(camera.getLatitude(), camera.getLongitude()));
+		return weatherCameraMarker;
+	}
+
 	@Override
 	protected void onCancelled() {
 		super.onCancelled();
@@ -85,7 +95,7 @@ public class GetWeatherCameraAsyncTask extends AsyncTask<Void, WeatherCamera, Vo
 	}
 
 	@Override
-	protected void onProgressUpdate(final WeatherCamera... values) {
+	protected void onProgressUpdate(final MarkerOptions... values) {
 		delegate.publishItem(values[0]);
 	}
 }

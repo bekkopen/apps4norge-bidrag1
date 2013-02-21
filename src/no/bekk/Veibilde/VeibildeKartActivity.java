@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import no.bekk.Veibilde.domain.WeatherCamera;
 import no.bekk.Veibilde.service.AsyncTaskDelegate;
 import no.bekk.Veibilde.service.GetWeatherCameraAsyncTask;
 import android.app.Activity;
@@ -16,17 +15,14 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class VeibildeKartActivity extends Activity implements
-		AsyncTaskDelegate<WeatherCamera> {
+public class VeibildeKartActivity extends Activity implements AsyncTaskDelegate<MarkerOptions> {
 	private LocationListener locationListener;
 	private GoogleMap veiBildeMap;
 	private LocationManager locationManager;
@@ -36,37 +32,33 @@ public class VeibildeKartActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.kart);
 
-		MapFragment fragment = (MapFragment) getFragmentManager()
-				.findFragmentById(R.id.map);
+		MapFragment fragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 		veiBildeMap = fragment.getMap();
 		veiBildeMap.setMyLocationEnabled(true);
-		locationManager = (LocationManager) this
-				.getSystemService(Context.LOCATION_SERVICE);
+		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		locationListener = new MyLocationListener();
-		locationManager.requestLocationUpdates(
-				LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 		GetWeatherCameraAsyncTask task = new GetWeatherCameraAsyncTask(this);
-	    task.execute();
+		task.execute();
 	}
 
 	@Override
-	public void publishItem(WeatherCamera object) {
-		MarkerOptions weatherCameraMarker = new MarkerOptions();
-		weatherCameraMarker.position(new LatLng(object.getLatitude(),
-		object.getLongitude()));
-		//Bitmap myMap = getBitmapFromURL("http://webkamera.vegvesen.no/thumbnail?id=100115");
-		//weatherCameraMarker.icon(BitmapDescriptorFactory.fromBitmap(myMap));
-		veiBildeMap.addMarker(weatherCameraMarker);
+	public void publishItem(final MarkerOptions object) {
+
+		// Bitmap myMap =
+		// getBitmapFromURL("http://webkamera.vegvesen.no/thumbnail?id=100115");
+		// weatherCameraMarker.icon(BitmapDescriptorFactory.fromBitmap(myMap));
+		veiBildeMap.addMarker(object);
 	}
 
 	@Override
-	public void didFailWithError(String errorMessage) {
+	public void didFailWithError(final String errorMessage) {
 		// To change body of implemented methods use File | Settings | File
 		// Templates.
 	}
 
 	@Override
-	public void didFinishProsess(String message) {
+	public void didFinishProsess(final String message) {
 		// GetWeatherCameraAsyncTask task = new GetWeatherCameraAsyncTask(this);
 		// task.execute();
 	}
@@ -76,14 +68,13 @@ public class VeibildeKartActivity extends Activity implements
 		if (locationManager != null && locationListener != null) {
 			locationManager.removeUpdates(locationListener);
 		}
-		this.finish();
+		finish();
 	}
 
-	public Bitmap getBitmapFromURL(String src) {
+	public Bitmap getBitmapFromURL(final String src) {
 		try {
 			URL url = new URL(src);
-			HttpURLConnection connection = (HttpURLConnection) url
-					.openConnection();
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setDoInput(true);
 			connection.connect();
 			InputStream input = connection.getInputStream();
@@ -98,11 +89,9 @@ public class VeibildeKartActivity extends Activity implements
 	class MyLocationListener implements LocationListener {
 
 		@Override
-		public void onLocationChanged(Location location) {
+		public void onLocationChanged(final Location location) {
 			veiBildeMap
-					.animateCamera(CameraUpdateFactory.newLatLngZoom(
-							new LatLng(location.getLatitude(), location
-									.getLongitude()), 15.0f));
+					.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15.0f));
 		}
 
 		@Override
@@ -118,8 +107,7 @@ public class VeibildeKartActivity extends Activity implements
 		}
 
 		@Override
-		public void onStatusChanged(final String provider, final int status,
-				final Bundle extras) {
+		public void onStatusChanged(final String provider, final int status, final Bundle extras) {
 			// TODO Auto-generated method stub
 
 		}
