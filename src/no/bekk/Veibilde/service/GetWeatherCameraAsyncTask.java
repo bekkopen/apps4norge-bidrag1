@@ -20,6 +20,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class GetWeatherCameraAsyncTask extends AsyncTask<Void, WeatherCamera, Void> {
 
 	private final AsyncTaskDelegate<WeatherCamera> delegate;
+    private final static int CONNECT_TIME_OUT = 5000;
+    private final static int READ_TIME_OUT = 10000;
+
 
 	private final String API_URL = "http://webkamera.vegvesen.no/metadata";
 
@@ -30,12 +33,14 @@ public class GetWeatherCameraAsyncTask extends AsyncTask<Void, WeatherCamera, Vo
 	@Override
 	protected Void doInBackground(final Void... params) {
 		URL xmlUrl;
-		try {
+        InputStream inputStream = null;
+        try {
 			xmlUrl = new URL(API_URL);
-
 			XmlPullParser parser = XmlPullParserFactory.newInstance().newPullParser();
 			URLConnection con = xmlUrl.openConnection();
-			InputStream inputStream = con.getInputStream();
+            con.setConnectTimeout(CONNECT_TIME_OUT);
+            con.setReadTimeout(READ_TIME_OUT);
+			inputStream = con.getInputStream();
 			parser.setInput(inputStream, "UTF-8");
 			if (parser != null) {
 				processWeatherCams(parser);
@@ -44,7 +49,14 @@ public class GetWeatherCameraAsyncTask extends AsyncTask<Void, WeatherCamera, Vo
 			Log.e(this.getClass().getCanonicalName(), ex.getLocalizedMessage());
 			ex.printStackTrace();
 			throw new RuntimeException(ex);
-		}
+		}finally{
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                Log.e(this.getClass().getCanonicalName(), e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
 
 		return null;
 	}
