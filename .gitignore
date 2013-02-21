@@ -20,3 +20,6 @@ gen/
 local.properties
 
 *.iml
+
+.classpath
+.DS_store
