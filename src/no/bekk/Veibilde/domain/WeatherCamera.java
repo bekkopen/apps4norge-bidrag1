@@ -10,8 +10,8 @@ package no.bekk.Veibilde.domain;
 public class WeatherCamera {
 
     private String id;
-    private String latitude;
-    private String longitude;
+    private double latitude;
+    private double longitude;
 
     public String getId() {
         return id;
@@ -20,4 +20,30 @@ public class WeatherCamera {
     public void setId(String id) {
         this.id = id;
     }
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+	
+	public String getImageUrl() {
+		return "http://webkamera.vegvesen.no/kamera?id=" + id;
+	}
+	
+	public String getThumbnailImageUrl() {
+		return "http://webkamera.vegvesen.no/thumbnail?id=" + id;
+	}
+    
+    
 }
