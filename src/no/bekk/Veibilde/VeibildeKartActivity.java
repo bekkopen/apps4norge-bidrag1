@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import no.bekk.Veibilde.domain.WeatherCamera;
 import no.bekk.Veibilde.service.AsyncTaskDelegate;
 import no.bekk.Veibilde.service.GetWeatherCameraAsyncTask;
 import android.app.Activity;
@@ -22,7 +23,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class VeibildeKartActivity extends Activity implements AsyncTaskDelegate<MarkerOptions> {
+public class VeibildeKartActivity extends Activity implements AsyncTaskDelegate<WeatherCamera> {
 	private LocationListener locationListener;
 	private GoogleMap veiBildeMap;
 	private LocationManager locationManager;
@@ -43,12 +44,12 @@ public class VeibildeKartActivity extends Activity implements AsyncTaskDelegate<
 	}
 
 	@Override
-	public void publishItem(final MarkerOptions object) {
+	public void publishItem(final WeatherCamera object) {
 
 		// Bitmap myMap =
 		// getBitmapFromURL("http://webkamera.vegvesen.no/thumbnail?id=100115");
 		// weatherCameraMarker.icon(BitmapDescriptorFactory.fromBitmap(myMap));
-		veiBildeMap.addMarker(object);
+		veiBildeMap.addMarker(object.getLokasjon());
 	}
 
 	@Override

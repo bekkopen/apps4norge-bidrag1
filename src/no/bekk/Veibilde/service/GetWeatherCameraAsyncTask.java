@@ -17,13 +17,13 @@ import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class GetWeatherCameraAsyncTask extends AsyncTask<Void, MarkerOptions, Void> {
+public class GetWeatherCameraAsyncTask extends AsyncTask<Void, WeatherCamera, Void> {
 
-	private final AsyncTaskDelegate<MarkerOptions> delegate;
+	private final AsyncTaskDelegate<WeatherCamera> delegate;
 
 	private final String API_URL = "http://webkamera.vegvesen.no/metadata";
 
-	public GetWeatherCameraAsyncTask(final AsyncTaskDelegate<MarkerOptions> delegate) {
+	public GetWeatherCameraAsyncTask(final AsyncTaskDelegate<WeatherCamera> delegate) {
 		this.delegate = delegate;
 	}
 
@@ -52,6 +52,8 @@ public class GetWeatherCameraAsyncTask extends AsyncTask<Void, MarkerOptions, Vo
 	private void processWeatherCams(final XmlPullParser parser) throws XmlPullParserException, IOException {
 		int eventType = -1;
 		WeatherCamera camera = null;
+		double latitude = -1;
+		double longitude = -1;
 		while (eventType != XmlPullParser.END_DOCUMENT) {
 
 			if (eventType == XmlPullParser.START_DOCUMENT) {
@@ -65,13 +67,13 @@ public class GetWeatherCameraAsyncTask extends AsyncTask<Void, MarkerOptions, Vo
 					camera.setId(id);
 				} else if (tagName.equals("lengdegrad")) {
 					eventType = parser.next();
-					camera.setLongitude(Double.parseDouble(parser.getText()));
+					longitude = Double.parseDouble(parser.getText());
 				} else if (tagName.equals("breddegrad")) {
 					eventType = parser.next();
-					camera.setLatitude(Double.parseDouble(parser.getText()));
-					MarkerOptions markerOptions = createMarkerOptions(camera);
-					publishProgress(markerOptions);
-
+					latitude = Double.parseDouble(parser.getText());
+					MarkerOptions markerOptions = createMarkerOptions(latitude, longitude);
+					camera.setLokasjon(markerOptions);
+					publishProgress(camera);
 				}
 				// Log.w(this.getClass().getCanonicalName(), "TAGNAME=" +
 				// tagName + ", value=" + parser.getText());
@@ -82,9 +84,9 @@ public class GetWeatherCameraAsyncTask extends AsyncTask<Void, MarkerOptions, Vo
 		Log.w(this.getClass().getCanonicalName(), "DONE");
 	}
 
-	private MarkerOptions createMarkerOptions(final WeatherCamera camera) {
+	private MarkerOptions createMarkerOptions(final double latitude, final double longitude) {
 		MarkerOptions weatherCameraMarker = new MarkerOptions();
-		weatherCameraMarker.position(new LatLng(camera.getLatitude(), camera.getLongitude()));
+		weatherCameraMarker.position(new LatLng(latitude, longitude));
 		return weatherCameraMarker;
 	}
 
@@ -95,7 +97,7 @@ public class GetWeatherCameraAsyncTask extends AsyncTask<Void, MarkerOptions, Vo
 	}
 
 	@Override
-	protected void onProgressUpdate(final MarkerOptions... values) {
+	protected void onProgressUpdate(final WeatherCamera... values) {
 		delegate.publishItem(values[0]);
 	}
 }
