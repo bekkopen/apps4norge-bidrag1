@@ -16,12 +16,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -46,24 +45,17 @@ public class VeibildeKartActivity extends Activity implements
 		locationListener = new MyLocationListener();
 		locationManager.requestLocationUpdates(
 				LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-		new GetWeatherCameraAsyncTask(this).execute();
-		MarkerOptions weatherCameraMarker = new MarkerOptions();
-		// weatherCameraMarker.position(new LatLng(object.getLatitude(),
-		// object.getLongitude()));
-		weatherCameraMarker.position(new LatLng(59.9032198, 10.7396514));
-		Bitmap myMap = getBitmapFromURL("http://webkamera.vegvesen.no/thumbnail?id=100115");
-		
-		weatherCameraMarker.icon(BitmapDescriptorFactory.fromBitmap(myMap));
-		veiBildeMap.addMarker(weatherCameraMarker);
+		GetWeatherCameraAsyncTask task = new GetWeatherCameraAsyncTask(this);
+	    task.execute();
 	}
 
 	@Override
 	public void publishItem(WeatherCamera object) {
-		Log.w("YNWA", "publishItem()");
 		MarkerOptions weatherCameraMarker = new MarkerOptions();
-		// weatherCameraMarker.position(new LatLng(object.getLatitude(),
-		// object.getLongitude()));
-		weatherCameraMarker.position(new LatLng(59.9032198, 10.7396514));
+		weatherCameraMarker.position(new LatLng(object.getLatitude(),
+		object.getLongitude()));
+		//Bitmap myMap = getBitmapFromURL("http://webkamera.vegvesen.no/thumbnail?id=100115");
+		//weatherCameraMarker.icon(BitmapDescriptorFactory.fromBitmap(myMap));
 		veiBildeMap.addMarker(weatherCameraMarker);
 	}
 
@@ -75,8 +67,8 @@ public class VeibildeKartActivity extends Activity implements
 
 	@Override
 	public void didFinishProsess(String message) {
-		// To change body of implemented methods use File | Settings | File
-		// Templates.
+		// GetWeatherCameraAsyncTask task = new GetWeatherCameraAsyncTask(this);
+		// task.execute();
 	}
 
 	@Override
@@ -86,20 +78,21 @@ public class VeibildeKartActivity extends Activity implements
 		}
 		this.finish();
 	}
-	
+
 	public Bitmap getBitmapFromURL(String src) {
-	    try {
-	        URL url = new URL(src);
-	        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-	        connection.setDoInput(true);
-	        connection.connect();
-	        InputStream input = connection.getInputStream();
-	        Bitmap myBitmap = BitmapFactory.decodeStream(input);
-	        return myBitmap;
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	        return null;
-	    }
+		try {
+			URL url = new URL(src);
+			HttpURLConnection connection = (HttpURLConnection) url
+					.openConnection();
+			connection.setDoInput(true);
+			connection.connect();
+			InputStream input = connection.getInputStream();
+			Bitmap myBitmap = BitmapFactory.decodeStream(input);
+			return myBitmap;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	class MyLocationListener implements LocationListener {
@@ -113,19 +106,20 @@ public class VeibildeKartActivity extends Activity implements
 		}
 
 		@Override
-		public void onProviderDisabled(String provider) {
+		public void onProviderDisabled(final String provider) {
 			// TODO Auto-generated method stub
 
 		}
 
 		@Override
-		public void onProviderEnabled(String provider) {
+		public void onProviderEnabled(final String provider) {
 			// TODO Auto-generated method stub
 
 		}
 
 		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) {
+		public void onStatusChanged(final String provider, final int status,
+				final Bundle extras) {
 			// TODO Auto-generated method stub
 
 		}
