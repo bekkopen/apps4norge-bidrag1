@@ -10,7 +10,13 @@ public class WeatherCamera {
 
     private String id;
     private MarkerOptions lokasjon;
-
+    private String description;
+    private String road;
+    
+    
+    public String getId() {
+    	return id;
+    }
 
     public void setId(String id) {
         this.id = id;
@@ -33,5 +39,27 @@ public class WeatherCamera {
 	public void setLokasjon(MarkerOptions lokasjon) {
 		this.lokasjon = lokasjon;
 	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getRoad() {
+		return road;
+	}
+
+	public void setRoad(String road) {
+		this.road = road;
+	}
+	
+	public String getDisplayString() {
+		return road + " " + description;
+	}
+
+	
 
 }

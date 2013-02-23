@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class GetWeatherCameraAsyncTask extends AsyncTask<Void, WeatherCamera, Void> {
@@ -54,6 +55,8 @@ public class GetWeatherCameraAsyncTask extends AsyncTask<Void, WeatherCamera, Vo
 		WeatherCamera camera = null;
 		double latitude = -1;
 		double longitude = -1;
+		String descripton = "";
+		String road = "";
 		while (eventType != XmlPullParser.END_DOCUMENT) {
 
 			if (eventType == XmlPullParser.START_DOCUMENT) {
@@ -68,10 +71,19 @@ public class GetWeatherCameraAsyncTask extends AsyncTask<Void, WeatherCamera, Vo
 				} else if (tagName.equals("lengdegrad")) {
 					eventType = parser.next();
 					longitude = Double.parseDouble(parser.getText());
-				} else if (tagName.equals("breddegrad")) {
+				} else if (tagName.equals("stedsnavn")) {
+					eventType = parser.next();
+					descripton = parser.getText();
+				} else if (tagName.equals("veg")) {
+					eventType = parser.next();
+					road = parser.getText();
+				}
+				else if (tagName.equals("breddegrad")) {
 					eventType = parser.next();
 					latitude = Double.parseDouble(parser.getText());
 					MarkerOptions markerOptions = createMarkerOptions(latitude, longitude);
+					camera.setDescription(descripton);
+					camera.setRoad(road);
 					camera.setLokasjon(markerOptions);
 					publishProgress(camera);
 				}
