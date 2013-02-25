@@ -1,22 +1,13 @@
 package no.bekk.Veibilde.service;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import no.bekk.Veibilde.domain.WeatherCamera;
-import android.os.AsyncTask;
-import android.util.Log;
 
-public class GetWeatherIconIDAsyncTask extends VeiBildeAsynTask<Void, WeatherCamera, Void> {
+public class GetWeatherIconIDAsyncTask extends VeiBildeXMLAsyncTask<Void, WeatherCamera, Void> {
 
 	
 	private final AsyncTaskDelegate<WeatherCamera> delegate;

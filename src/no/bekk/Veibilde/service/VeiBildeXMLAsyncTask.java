@@ -18,7 +18,7 @@ import java.net.URLConnection;
  * Time: 6:03 PM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class VeiBildeAsynTask<Params, Progress, Result>  extends AsyncTask<Params, Progress, Result> {
+public abstract class VeiBildeXMLAsyncTask<Params, Progress, Result>  extends AsyncTask<Params, Progress, Result> {
 
     private final static int CONNECT_TIME_OUT = 5000;
     private final static int READ_TIME_OUT = 10000;
