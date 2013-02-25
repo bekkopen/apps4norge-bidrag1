@@ -22,8 +22,12 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.Marker;
@@ -34,6 +38,9 @@ public class VeibildeKartActivity extends Activity implements
 	private GoogleMap veiBildeMap;
 	private LocationManager locationManager;
 	private Map<Marker, WeatherCamera> myMap;
+	private ImageView infoWindowImageView;
+	private TextView infoWindowDescription;
+	private View infoWindow;
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
@@ -43,8 +50,11 @@ public class VeibildeKartActivity extends Activity implements
 			myMap = new HashMap<Marker, WeatherCamera>();
 			MapFragment fragment = (MapFragment) getFragmentManager()
 					.findFragmentById(R.id.map);
+			infoWindow = (View) getLayoutInflater().inflate(
+					R.layout.infowindow, null);
 			veiBildeMap = fragment.getMap();
 			veiBildeMap.setMyLocationEnabled(true);
+			veiBildeMap.setInfoWindowAdapter(new MyInfoWindowAdapter());  
 			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 			locationListener = new MyLocationListener();
 			locationManager.requestLocationUpdates(
@@ -72,7 +82,8 @@ public class VeibildeKartActivity extends Activity implements
 		veiBildeMap.setOnMarkerClickListener(new MyMarkerClickListener());
 		Marker mapMarker = veiBildeMap.addMarker(object.getLokasjon().title(
 				object.getDisplayString()));
-		myMap.put(mapMarker, object);
+		myMap.put(mapMarker, object); 
+
 	}
 
 	@Override
@@ -95,6 +106,19 @@ public class VeibildeKartActivity extends Activity implements
 		finish();
 	}
 
+	class MyInfoWindowAdapter implements InfoWindowAdapter {
+		@Override
+		public View getInfoWindow(Marker arg0) {
+			return null;
+		}
+
+		@Override
+		public View getInfoContents(Marker arg0) {
+			return infoWindow;
+
+		}
+	}
+
 	class MyMarkerClickListener implements OnMarkerClickListener {
 
 		public MyMarkerClickListener() {
@@ -103,6 +127,13 @@ public class VeibildeKartActivity extends Activity implements
 
 		@Override
 		public boolean onMarkerClick(Marker marker) {
+			infoWindowImageView = (ImageView) infoWindow
+					.findViewById(R.id.infoWindowImageView);
+			infoWindowDescription = (TextView) infoWindow
+					.findViewById(R.id.infoWindowDescription);
+			WeatherCamera pressedMarker = myMap.get(marker);
+			infoWindowDescription.setText(pressedMarker.getDisplayString());
+			infoWindowImageView.setImageResource(R.drawable.kamera);
 			marker.showInfoWindow();
 			return true;
 		}
