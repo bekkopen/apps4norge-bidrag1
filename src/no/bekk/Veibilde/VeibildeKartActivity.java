@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.util.Log;
 import no.bekk.Veibilde.domain.WeatherCamera;
 import no.bekk.Veibilde.service.AsyncTaskDelegate;
 import no.bekk.Veibilde.service.GetWeatherCameraAsyncTask;
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.Marker;
+import no.bekk.Veibilde.service.GetWeatherIconIDAsyncTask;
 
 public class VeibildeKartActivity extends Activity implements
 		AsyncTaskDelegate<WeatherCamera> {
@@ -108,7 +110,30 @@ public class VeibildeKartActivity extends Activity implements
 		@Override
 		public boolean onMarkerClick(Marker marker) {
 			marker.showInfoWindow();
-			return true;
+			//Start async task for fetching weather id, delegate should be modal view but we use activity for now..
+            WeatherCamera weatherCamera = VeibildeKartActivity.this.myMap.get(marker);
+            Log.w(this.getClass().getCanonicalName(), "Clicked weather camera "+weatherCamera);
+
+            AsyncTaskDelegate<WeatherCamera> dummy = new AsyncTaskDelegate<WeatherCamera>() {
+                @Override
+                public void publishItem(WeatherCamera object) {
+                    Log.e(this.getClass().getCanonicalName(), "Found weather "+object.getWeatherIconId());
+                }
+
+                @Override
+                public void didFailWithError(String errorMessage) {
+                    //To change body of implemented methods use File | Settings | File Templates.
+                }
+
+                @Override
+                public void didFinishProsess(String message) {
+                    //To change body of implemented methods use File | Settings | File Templates.
+                }
+            };
+
+            GetWeatherIconIDAsyncTask task = new GetWeatherIconIDAsyncTask(dummy, weatherCamera);
+            task.execute();
+            return true;
 		}
 
 	}
