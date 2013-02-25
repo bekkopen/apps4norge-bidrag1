@@ -69,6 +69,7 @@ public class GetWeatherCameraAsyncTask extends AsyncTask<Void, WeatherCamera, Vo
 		double longitude = -1;
 		String descripton = "";
 		String road = "";
+		String weatherURL = "";
 		while (eventType != XmlPullParser.END_DOCUMENT) {
 
 			if (eventType == XmlPullParser.START_DOCUMENT) {
@@ -89,14 +90,17 @@ public class GetWeatherCameraAsyncTask extends AsyncTask<Void, WeatherCamera, Vo
 				} else if (tagName.equals("veg")) {
 					eventType = parser.next();
 					road = parser.getText();
-				}
-				else if (tagName.equals("breddegrad")) {
+				} else if (tagName.equals("breddegrad")) {
 					eventType = parser.next();
 					latitude = Double.parseDouble(parser.getText());
+				} else if (tagName.equals("vaervarsel")) {
+					eventType = parser.next();
+					weatherURL = parser.getText();
 					MarkerOptions markerOptions = createMarkerOptions(latitude, longitude);
 					camera.setDescription(descripton);
 					camera.setRoad(road);
 					camera.setLokasjon(markerOptions);
+					camera.setWeatherURL(weatherURL);
 					publishProgress(camera);
 				}
 				// Log.w(this.getClass().getCanonicalName(), "TAGNAME=" +
