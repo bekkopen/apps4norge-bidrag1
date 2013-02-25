@@ -30,12 +30,12 @@ public class GetWeatherCameraAsyncTask extends VeiBildeAsynTask<Void, WeatherCam
 		this.delegate = delegate;
 	}
 
-    public String getAPIURL(){
+    protected String getAPIURL(){
         return this.API_URL;
     }
 
 
-	public void processParser(final XmlPullParser parser) throws XmlPullParserException, IOException {
+    protected void processParser(final XmlPullParser parser) throws XmlPullParserException, IOException {
 		int eventType = -1;
 		WeatherCamera camera = null;
 		double latitude = -1;
@@ -91,11 +91,6 @@ public class GetWeatherCameraAsyncTask extends VeiBildeAsynTask<Void, WeatherCam
 		return weatherCameraMarker;
 	}
 
-	@Override
-	protected void onCancelled() {
-		super.onCancelled();
-		Log.w("GetAirportsDataTask", "Stopped AsyncTask");
-	}
 
 	@Override
 	protected void onProgressUpdate(final WeatherCamera... values) {

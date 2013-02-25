@@ -23,7 +23,7 @@ public abstract class VeiBildeAsynTask<Params, Progress, Result>  extends AsyncT
     private final static int CONNECT_TIME_OUT = 5000;
     private final static int READ_TIME_OUT = 10000;
 
-    public abstract String getAPIURL();
+    protected abstract String getAPIURL();
 
 
     protected Void doInBackground(final Void... params) {
@@ -56,5 +56,5 @@ public abstract class VeiBildeAsynTask<Params, Progress, Result>  extends AsyncT
         return null;
     }
 
-    public abstract void processParser(XmlPullParser parser)throws XmlPullParserException, IOException;
+    protected abstract void processParser(XmlPullParser parser)throws XmlPullParserException, IOException;
 }
