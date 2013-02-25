@@ -12,7 +12,8 @@ public class WeatherCamera {
     private MarkerOptions lokasjon;
     private String description;
     private String road;
-    
+    private int weatherIconId = -1;
+    private String weatherURL = "";
     
     public String getId() {
     	return id;
@@ -21,6 +22,8 @@ public class WeatherCamera {
     public void setId(String id) {
         this.id = id;
     }
+    
+    
 
 	public String getImageUrl() {
 		return "http://webkamera.vegvesen.no/kamera?id=" + id;
@@ -58,6 +61,22 @@ public class WeatherCamera {
 	
 	public String getDisplayString() {
 		return road + " " + description;
+	}
+
+	public String getWeatherURL() {
+		return weatherURL;
+	}
+
+	public void setWeatherURL(String weatherURL) {
+		this.weatherURL = weatherURL;
+	}
+
+	public int getWeatherIconId() {
+		return weatherIconId;
+	}
+
+	public void setWeatherIconId(int weatherIconId) {
+		this.weatherIconId = weatherIconId;
 	}
 
 	

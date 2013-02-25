@@ -55,7 +55,7 @@ public class VeibildeKartActivity extends Activity implements
 			AlertDialog alertDialog = new AlertDialog.Builder(this).create();
 			alertDialog.setTitle("Noe gikk galt");
 			alertDialog
-					.setMessage("Ingen internettilkobling. SlŒ pŒ WiFi/3G og pr¿v igjen");
+					.setMessage("Ingen internettilkobling. Slï¿½ pï¿½ WiFi/3G og prï¿½v igjen");
 			alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Avslutt",
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
@@ -69,6 +69,10 @@ public class VeibildeKartActivity extends Activity implements
 
 	@Override
 	public void publishItem(final WeatherCamera object) {
+		// if object.getWeatherIconInteger != -1
+			//handle show weather icon
+		//else populate
+		
 		veiBildeMap.setOnMarkerClickListener(new MyMarkerClickListener());
 		Marker mapMarker = veiBildeMap.addMarker(object.getLokasjon().title(
 				object.getDisplayString()));
