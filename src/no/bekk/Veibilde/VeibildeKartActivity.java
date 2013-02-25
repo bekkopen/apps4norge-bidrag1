@@ -55,7 +55,7 @@ public class VeibildeKartActivity extends Activity implements
 			AlertDialog alertDialog = new AlertDialog.Builder(this).create();
 			alertDialog.setTitle("Noe gikk galt");
 			alertDialog
-					.setMessage("Ingen internettilkobling. Slå på WiFi/3G og prøv igjen");
+					.setMessage("Ingen internettilkobling. Sl√• p√• WiFi/3G og pr√∏v igjen");
 			alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Avslutt",
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
