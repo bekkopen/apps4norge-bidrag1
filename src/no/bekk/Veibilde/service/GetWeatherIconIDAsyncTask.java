@@ -16,7 +16,7 @@ import no.bekk.Veibilde.domain.WeatherCamera;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class WeatherFetcherAsyncTask extends AsyncTask<Void, WeatherCamera, Void> {
+public class GetWeatherIconIDAsyncTask extends AsyncTask<Void, WeatherCamera, Void> {
 
 	
 	private final AsyncTaskDelegate<WeatherCamera> delegate; //reference to object listening for chenges
@@ -27,14 +27,15 @@ public class WeatherFetcherAsyncTask extends AsyncTask<Void, WeatherCamera, Void
 
 	private final String API_URL = "http://webkamera.vegvesen.no/metadata";
 
-	public WeatherFetcherAsyncTask(final AsyncTaskDelegate<WeatherCamera> delegate, WeatherCamera weatherModel) {
+	public GetWeatherIconIDAsyncTask(final AsyncTaskDelegate<WeatherCamera> delegate, WeatherCamera weatherModel) {
 		this.delegate = delegate;
 		this.currentWeatherCameraModel = weatherModel;
 	}
 
 	@Override
 	protected Void doInBackground(final Void... params) {
-		return null;
+		Log.e(this.getClass().getCanonicalName(), "Start fetching weather");
+        return null;
 	}
 
 	@Override
