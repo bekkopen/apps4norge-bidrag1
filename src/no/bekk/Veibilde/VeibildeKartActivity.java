@@ -5,30 +5,34 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import android.util.Log;
 import no.bekk.Veibilde.domain.WeatherCamera;
 import no.bekk.Veibilde.service.AsyncTaskDelegate;
 import no.bekk.Veibilde.service.GetWeatherCameraAsyncTask;
+import no.bekk.Veibilde.service.GetWeatherIconIDAsyncTask;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import no.bekk.Veibilde.service.GetWeatherIconIDAsyncTask;
 
 public class VeibildeKartActivity extends Activity implements
 		AsyncTaskDelegate<WeatherCamera> {
@@ -36,6 +40,8 @@ public class VeibildeKartActivity extends Activity implements
 	private GoogleMap veiBildeMap;
 	private LocationManager locationManager;
 	private Map<Marker, WeatherCamera> myMap;
+
+	private static final int FIVE_MINUTES = 1000 * 60 * 5;
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
@@ -47,10 +53,11 @@ public class VeibildeKartActivity extends Activity implements
 					.findFragmentById(R.id.map);
 			veiBildeMap = fragment.getMap();
 			veiBildeMap.setMyLocationEnabled(true);
+
 			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 			locationListener = new MyLocationListener();
-			locationManager.requestLocationUpdates(
-					LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+			findBestLocation(30, System.currentTimeMillis() - FIVE_MINUTES);
+
 			GetWeatherCameraAsyncTask task = new GetWeatherCameraAsyncTask(this);
 			task.execute();
 		} else {
@@ -66,6 +73,38 @@ public class VeibildeKartActivity extends Activity implements
 					});
 
 			alertDialog.show();
+		}
+	}
+
+	private void findBestLocation(final int minDistance, final long minTime) {
+		Location bestLocation = null;
+		float bestAccuracy = Float.MAX_VALUE;
+		long bestTime = Long.MIN_VALUE;
+		List<String> matchingProviders = locationManager.getAllProviders();
+		for (String provider : matchingProviders) {
+			Location location = locationManager.getLastKnownLocation(provider);
+			if (location != null) {
+				float accuracy = location.getAccuracy();
+				long time = location.getTime();
+
+				if (time > minTime && accuracy < bestAccuracy) {
+					bestLocation = location;
+					bestAccuracy = accuracy;
+					bestTime = time;
+				} else if (time < minTime && bestAccuracy == Float.MAX_VALUE && time > bestTime) {
+					bestLocation = location;
+					bestTime = time;
+				}
+			}
+		}
+
+		if (bestLocation != null && (bestTime > minTime || bestAccuracy < minDistance)) {
+			veiBildeMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
+					new LatLng(bestLocation.getLatitude(), bestLocation.getLongitude()), 15.0f));
+		} else {
+			Criteria criteria = new Criteria();
+			criteria.setAccuracy(Criteria.ACCURACY_LOW);
+			locationManager.requestSingleUpdate(criteria, locationListener, getMainLooper());
 		}
 	}
 
@@ -149,7 +188,8 @@ public class VeibildeKartActivity extends Activity implements
 
 		@Override
 		public void onLocationChanged(final Location location) {
-
+			veiBildeMap
+					.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15.0f));
 		}
 
 		@Override
