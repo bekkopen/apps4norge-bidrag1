@@ -18,11 +18,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class GetWeatherCameraAsyncTask extends AsyncTask<Void, WeatherCamera, Void> {
+public class GetWeatherCameraAsyncTask extends VeiBildeAsynTask<Void, WeatherCamera, Void> {
 
 	private final AsyncTaskDelegate<WeatherCamera> delegate;
-    private final static int CONNECT_TIME_OUT = 5000;
-    private final static int READ_TIME_OUT = 10000;
+
 
 
 	private final String API_URL = "http://webkamera.vegvesen.no/metadata";
@@ -31,38 +30,12 @@ public class GetWeatherCameraAsyncTask extends AsyncTask<Void, WeatherCamera, Vo
 		this.delegate = delegate;
 	}
 
-	@Override
-	protected Void doInBackground(final Void... params) {
-		URL xmlUrl;
-        InputStream inputStream = null;
-        try {
-			xmlUrl = new URL(API_URL);
-			XmlPullParser parser = XmlPullParserFactory.newInstance().newPullParser();
-			URLConnection con = xmlUrl.openConnection();
-            con.setConnectTimeout(CONNECT_TIME_OUT);
-            con.setReadTimeout(READ_TIME_OUT);
-			inputStream = con.getInputStream();
-			parser.setInput(inputStream, "UTF-8");
-			if (parser != null) {
-				processWeatherCams(parser);
-			}
-		} catch (Exception ex) {
-			Log.e(this.getClass().getCanonicalName(), ex.getLocalizedMessage());
-			ex.printStackTrace();
-			throw new RuntimeException(ex);
-		}finally{
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                Log.e(this.getClass().getCanonicalName(), e.getMessage());
-                throw new RuntimeException(e);
-            }
-        }
+    public String getAPIURL(){
+        return this.API_URL;
+    }
 
-		return null;
-	}
 
-	private void processWeatherCams(final XmlPullParser parser) throws XmlPullParserException, IOException {
+	public void processParser(final XmlPullParser parser) throws XmlPullParserException, IOException {
 		int eventType = -1;
 		WeatherCamera camera = null;
 		double latitude = -1;
