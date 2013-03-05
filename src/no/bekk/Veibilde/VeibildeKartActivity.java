@@ -10,6 +10,7 @@ import java.util.Map;
 
 import android.os.AsyncTask;
 import no.bekk.Veibilde.domain.WeatherCamera;
+import no.bekk.Veibilde.helpers.ImageHelper;
 import no.bekk.Veibilde.service.AsyncTaskDelegate;
 import no.bekk.Veibilde.service.GetWeatherCameraAsyncTask;
 import no.bekk.Veibilde.service.GetWeatherIconIDAsyncTask;
@@ -186,35 +187,25 @@ public class VeibildeKartActivity extends Activity implements
 					.findViewById(R.id.infoWindowImageView);
 			infoWindowDescription = (TextView) infoWindow
 					.findViewById(R.id.infoWindowDescription);
-			WeatherCamera pressedMarker = myMap.get(marker);
-			infoWindowDescription.setText(pressedMarker.getDisplayString());
-			marker.showInfoWindow();
-            WeatherCamera weatherCamera = VeibildeKartActivity.this.myMap.get(marker);
-            Log.w(this.getClass().getCanonicalName(), "Clicked weather camera "+weatherCamera);
+			WeatherCamera weatherCamera = myMap.get(marker);
+			infoWindowDescription.setText(weatherCamera.getDisplayString());
 
+            marker.showInfoWindow();
             final String imageUrl = weatherCamera.getImageUrl();
             AsyncTask getBitmapImageTask = new AsyncTask() {
+
                 @Override
                 protected Object doInBackground(Object... params) {
-                    try {
-                        URL url = new URL(imageUrl);
-                        HttpURLConnection connection = (HttpURLConnection) url
-                                .openConnection();
-                        connection.setDoInput(true);
-                        connection.connect();
-                        InputStream input = connection.getInputStream();
-                        Bitmap myBitmap = BitmapFactory.decodeStream(input);
-                        publishProgress(myBitmap);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
+                    Bitmap bitmap = ImageHelper.instance.getBitmap(imageUrl);
+                    publishProgress(bitmap);
+
                     return null;
                 }
 
                 @Override
                 protected void onProgressUpdate(final Object... values) {
-                    infoWindowImageView.setImageBitmap((Bitmap)values[0]);
+                    if(values.length > 0)
+                        infoWindowImageView.setImageBitmap((Bitmap)values[0]);
                 }
 
             };

@@ -12,6 +12,15 @@
         android:textColor="#000000"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
+	<ImageView
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			android:id="@+id/weatherIconImageView"
+			android:layout_width="40dp"
+			android:layout_height="40dp"
+			android:layout_alignParentTop="true" >
+
+	</ImageView>
+
     <ImageView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/infoWindowImageView"
@@ -21,13 +30,6 @@
 
     </ImageView>
 
-	<ImageView
-			xmlns:android="http://schemas.android.com/apk/res/android"
-			android:id="@+id/weatherIconImageView"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentTop="true" >
 
-	</ImageView>
 
 </LinearLayout> 
