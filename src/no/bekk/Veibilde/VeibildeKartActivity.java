@@ -1,13 +1,13 @@
 package no.bekk.Veibilde;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.os.AsyncTask;
 import no.bekk.Veibilde.domain.WeatherCamera;
 import no.bekk.Veibilde.service.AsyncTaskDelegate;
 import no.bekk.Veibilde.service.GetWeatherCameraAsyncTask;
@@ -118,15 +118,24 @@ public class VeibildeKartActivity extends Activity implements
 	}
 
 	@Override
-	public void publishItem(final WeatherCamera object) {
+	public void publishItem(final WeatherCamera weatherCamera) {
 		// if object.getWeatherIconInteger != -1
 			//handle show weather icon
 		//else populate
-		
-		veiBildeMap.setOnMarkerClickListener(new MyMarkerClickListener());
-		Marker mapMarker = veiBildeMap.addMarker(object.getLokasjon().title(
-				object.getDisplayString()));
-		myMap.put(mapMarker, object); 
+		if(weatherCamera.getWeatherIconId() != -1){ //weather icon task
+            Log.e(this.getLocalClassName(), "GOT WEATHER ICON "+weatherCamera.getWeatherIconId());
+
+
+
+
+
+        }else{//weather camera task
+            veiBildeMap.setOnMarkerClickListener(new MyMarkerClickListener());
+            Marker mapMarker = veiBildeMap.addMarker(weatherCamera.getLokasjon().title(
+                    weatherCamera.getDisplayString()));
+            myMap.put(mapMarker, weatherCamera);
+
+        }
 
 	}
 
@@ -177,35 +186,52 @@ public class VeibildeKartActivity extends Activity implements
 					.findViewById(R.id.infoWindowDescription);
 			WeatherCamera pressedMarker = myMap.get(marker);
 			infoWindowDescription.setText(pressedMarker.getDisplayString());
-			infoWindowImageView.setImageResource(R.drawable.kamera);
+			//infoWindowImageView.setImageResource(R.drawable.kamera);
 			marker.showInfoWindow();
 			//Start async task for fetching weather id, delegate should be modal view but we use activity for now..
             WeatherCamera weatherCamera = VeibildeKartActivity.this.myMap.get(marker);
             Log.w(this.getClass().getCanonicalName(), "Clicked weather camera "+weatherCamera);
 
-            AsyncTaskDelegate<WeatherCamera> dummy = new AsyncTaskDelegate<WeatherCamera>() {
+
+            final String imageUrl = weatherCamera.getImageUrl();
+            AsyncTask getBitmapImageTask = new AsyncTask() {
+
+
                 @Override
-                public void publishItem(WeatherCamera object) {
-                    Log.e(this.getClass().getCanonicalName(), "Found weather "+object.getWeatherIconId());
+                protected Object doInBackground(Object... params) {
+                    try {
+                        URL url = new URL(imageUrl);
+                        HttpURLConnection connection = (HttpURLConnection) url
+                                .openConnection();
+                        connection.setDoInput(true);
+                        connection.connect();
+                        InputStream input = connection.getInputStream();
+                        Bitmap myBitmap = BitmapFactory.decodeStream(input);
+                        publishProgress(myBitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                    return null;
                 }
 
                 @Override
-                public void didFailWithError(String errorMessage) {
-                    //To change body of implemented methods use File | Settings | File Templates.
+                protected void onProgressUpdate(final Object... values) {
+                    infoWindowImageView.setImageBitmap((Bitmap)values[0]);
                 }
 
-                @Override
-                public void didFinishProsess(String message) {
-                    //To change body of implemented methods use File | Settings | File Templates.
-                }
             };
+            getBitmapImageTask.execute();
 
-            GetWeatherIconIDAsyncTask task = new GetWeatherIconIDAsyncTask(dummy, weatherCamera);
+
+            GetWeatherIconIDAsyncTask task = new GetWeatherIconIDAsyncTask(VeibildeKartActivity.this, weatherCamera);
             task.execute();
             return true;
 		}
 
 	}
+
+
 
 	private boolean isNetworkAvailable() {
 		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -243,20 +269,6 @@ public class VeibildeKartActivity extends Activity implements
 
 	}
 
-	private Bitmap getBitmapFromURL(final String src) {
-		try {
-			URL url = new URL(src);
-			HttpURLConnection connection = (HttpURLConnection) url
-					.openConnection();
-			connection.setDoInput(true);
-			connection.connect();
-			InputStream input = connection.getInputStream();
-			Bitmap myBitmap = BitmapFactory.decodeStream(input);
-			return myBitmap;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+
 
 }
