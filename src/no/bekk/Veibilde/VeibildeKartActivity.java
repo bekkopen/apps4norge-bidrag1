@@ -1,6 +1,7 @@
 package no.bekk.Veibilde;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -119,16 +120,17 @@ public class VeibildeKartActivity extends Activity implements
 
 	@Override
 	public void publishItem(final WeatherCamera weatherCamera) {
-		// if object.getWeatherIconInteger != -1
-			//handle show weather icon
-		//else populate
 		if(weatherCamera.getWeatherIconId() != -1){ //weather icon task
-            Log.e(this.getLocalClassName(), "GOT WEATHER ICON "+weatherCamera.getWeatherIconId());
-
-
-
-
-
+            String fieldName = "s"+weatherCamera.getWeatherIconId();
+            try {
+                Field f = R.drawable.class.getDeclaredField(fieldName);
+                int drawableId = f.getInt(f);
+                ImageView weatherView = (ImageView) infoWindow
+                        .findViewById(R.id.weatherIconImageView);
+                weatherView.setImageDrawable(getResources().getDrawable(drawableId));
+            } catch (Exception e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
         }else{//weather camera task
             veiBildeMap.setOnMarkerClickListener(new MyMarkerClickListener());
             Marker mapMarker = veiBildeMap.addMarker(weatherCamera.getLokasjon().title(
@@ -186,17 +188,12 @@ public class VeibildeKartActivity extends Activity implements
 					.findViewById(R.id.infoWindowDescription);
 			WeatherCamera pressedMarker = myMap.get(marker);
 			infoWindowDescription.setText(pressedMarker.getDisplayString());
-			//infoWindowImageView.setImageResource(R.drawable.kamera);
 			marker.showInfoWindow();
-			//Start async task for fetching weather id, delegate should be modal view but we use activity for now..
             WeatherCamera weatherCamera = VeibildeKartActivity.this.myMap.get(marker);
             Log.w(this.getClass().getCanonicalName(), "Clicked weather camera "+weatherCamera);
 
-
             final String imageUrl = weatherCamera.getImageUrl();
             AsyncTask getBitmapImageTask = new AsyncTask() {
-
-
                 @Override
                 protected Object doInBackground(Object... params) {
                     try {
